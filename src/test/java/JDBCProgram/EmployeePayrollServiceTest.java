@@ -1,10 +1,10 @@
 package JDBCProgram;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Test;
 
 import JDBCProgram.EmployeePayrollService.IOService;
@@ -43,11 +43,28 @@ public class EmployeePayrollServiceTest {
 		assertEquals(3, entriesConsole);
 	}
 	
+	/**
+	 * UC1 JDBC
+	 * Matching number Of retrieved entries from database
+	 */
 	@Test
 	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchNumberofEntries() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
 		assertEquals(3, employeePayrollData.size());
+	}
+	
+	/**
+	 * UC2 JDBC
+	 * Updating new Salary and syncing with java 
+	 */
+	@Test
+	public void givenNewSalaryForEmployee_WhenUpdatedShouldSyncWithDB() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
+		employeePayrollService.updateSalary("Terisa", 10000000.00);
+		boolean result = employeePayrollService.checkEmployeeDataSync("Terisa");
+		assertTrue(result);
 	}
 }
 	

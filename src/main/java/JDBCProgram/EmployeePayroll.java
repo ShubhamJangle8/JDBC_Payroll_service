@@ -3,10 +3,10 @@ package JDBCProgram;
 import java.time.LocalDate;
 
 public class EmployeePayroll {
-	private int id;
-	private String name;
-	private double salary;
-	private LocalDate date;
+	public int id;
+	public String name;
+	public double salary;
+	public LocalDate date;
 
 	public EmployeePayroll(int id, String name, double salary) {
 		super();

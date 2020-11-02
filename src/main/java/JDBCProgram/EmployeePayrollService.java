@@ -12,7 +12,7 @@ public class EmployeePayrollService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
 
-	List<EmployeePayroll> empPayrollArray;
+	List<EmployeePayroll> empPayrollArrayList;
 
 	public EmployeePayrollService() {
 
@@ -20,14 +20,14 @@ public class EmployeePayrollService {
 	
 	public EmployeePayrollService(List<EmployeePayroll> empPayrollArray) {
 		super();
-		this.empPayrollArray = empPayrollArray;
+		this.empPayrollArrayList = empPayrollArray;
 	}
 
 	public void writeEmployeePayrollData(IOService ioService) {
 		if (ioService == IOService.CONSOLE_IO) {
-			System.out.println("The employee details are : " + empPayrollArray);
+			System.out.println("The employee details are : " + empPayrollArrayList);
 		} else if (ioService == IOService.FILE_IO)
-			new EmployeePayrollFileIOService().writeData(empPayrollArray);
+			new EmployeePayrollFileIOService().writeData(empPayrollArrayList);
 	}
 
 	public void printData() {
@@ -48,20 +48,61 @@ public class EmployeePayrollService {
 			String name = scanner.nextLine();
 			System.out.println("Enter Employee Salary : ");
 			double salary = scanner.nextDouble();
-			empPayrollArray.add(new EmployeePayroll(id, name, salary));
+			empPayrollArrayList.add(new EmployeePayroll(id, name, salary));
 		} else if (ioService.equals(IOService.FILE_IO)) {
 			System.out.println("Reading data from file");
 			new EmployeePayrollFileIOService().printData();
 		}
 	}
 	
+	/**
+	 * Reading details from database UC1
+	 * @param ioService
+	 * @return
+	 */
 	public List<EmployeePayroll> readEmployeeDataFromDB(IOService ioService){
 		if(ioService.equals(IOService.DB_IO)) {
-			this.empPayrollArray = new EmployeePayrollDBService().readData();
+			this.empPayrollArrayList = new EmployeePayrollDBService().readData();
 		}
-		return this.empPayrollArray;
+		return this.empPayrollArrayList;
 	}
 	
+	/**
+	 * Updating the salary in database as well as the employee payroll data UC2
+	 * @param name
+	 * @param salary
+	 */
+	public void updateSalary(String name, double salary) {
+		int countUpdates = new EmployeePayrollDBService().updateDataUsingStatement(name, salary);
+		if(countUpdates == 0)
+			return;
+		EmployeePayroll empPayrollData= this.getEmployeePayrollData(name);
+		if(empPayrollData != null)
+			empPayrollData.salary = salary;
+	}
+	
+	private EmployeePayroll getEmployeePayrollData(String name) {
+		return this.empPayrollArrayList.stream().filter(employeePayrollItem -> employeePayrollItem.name.equals(name)).findFirst().orElse(null);
+	}
+	
+	/**
+	 * Checking for Employee Data in sync with database
+	 * @param name
+	 * @return
+	 */
+	public boolean checkEmployeeDataSync(String name) {
+		List<EmployeePayroll> employees = null;
+		employees = new EmployeePayrollDBService().getEmployeeData(name);
+		System.out.println(employees);
+		System.out.println(getEmployeePayrollData(name));
+		return employees.get(0).equals(getEmployeePayrollData(name));
+	}
+	
+	/**
+	 * Counting number of entries in file operations
+	 * @param fileIo
+	 * @return
+	 */
 	public long countEntries(IOService fileIo) {
 		long entries = 0;
 		try {
@@ -85,4 +126,5 @@ public class EmployeePayrollService {
 		empPayrollService.readEmployeeData(IOService.FILE_IO);
 		empPayrollService.writeEmployeePayrollData(IOService.FILE_IO);
 	}
+
 }

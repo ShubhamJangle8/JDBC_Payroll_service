@@ -1,4 +1,4 @@
-package JDBCProgram;
+package com.jdbcprogram;
 
 import java.time.LocalDate;
 

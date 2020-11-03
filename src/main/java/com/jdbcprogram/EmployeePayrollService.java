@@ -13,13 +13,17 @@ public class EmployeePayrollService {
 	}
 
 	List<EmployeePayroll> empPayrollArrayList;
+	private EmployeePayrollDBService employeePayrollDBService;
 
+	/**
+	 * Getting instance of EmployeeDBService by one call
+	 */
 	public EmployeePayrollService() {
-
+		this.employeePayrollDBService = EmployeePayrollDBService.getInstance();
 	}
 	
 	public EmployeePayrollService(List<EmployeePayroll> empPayrollArray) {
-		super();
+		this();
 		this.empPayrollArrayList = empPayrollArray;
 	}
 
@@ -62,7 +66,7 @@ public class EmployeePayrollService {
 	 */
 	public List<EmployeePayroll> readEmployeeDataFromDB(IOService ioService){
 		if(ioService.equals(IOService.DB_IO)) {
-			this.empPayrollArrayList = new EmployeePayrollDBService().readData();
+			this.empPayrollArrayList = employeePayrollDBService.readData();
 		}
 		return this.empPayrollArrayList;
 	}
@@ -73,7 +77,7 @@ public class EmployeePayrollService {
 	 * @param salary
 	 */
 	public void updateSalary(String name, double salary) {
-		int countUpdates = new EmployeePayrollDBService().updateDataUsingStatement(name, salary);
+		int countUpdates = employeePayrollDBService.updateEmployeeData(name, salary);
 		if(countUpdates == 0)
 			return;
 		EmployeePayroll empPayrollData= this.getEmployeePayrollData(name);
@@ -81,6 +85,11 @@ public class EmployeePayrollService {
 			empPayrollData.salary = salary;
 	}
 	
+	/**
+	 * Get employee payroll data from memory
+	 * @param name
+	 * @return
+	 */
 	private EmployeePayroll getEmployeePayrollData(String name) {
 		return this.empPayrollArrayList.stream().filter(employeePayrollItem -> employeePayrollItem.name.equals(name)).findFirst().orElse(null);
 	}
@@ -92,7 +101,7 @@ public class EmployeePayrollService {
 	 */
 	public boolean checkEmployeeDataSync(String name) {
 		List<EmployeePayroll> employees = null;
-		employees = new EmployeePayrollDBService().getEmployeeData(name);
+		employees = employeePayrollDBService.getEmployeePayrollData(name);
 		System.out.println(employees);
 		System.out.println(getEmployeePayrollData(name));
 		return employees.get(0).equals(getEmployeePayrollData(name));

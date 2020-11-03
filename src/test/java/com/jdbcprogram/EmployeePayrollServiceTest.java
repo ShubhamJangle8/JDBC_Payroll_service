@@ -44,7 +44,7 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	/**
-	 * UC1 JDBC
+	 * UC2 JDBC
 	 * Matching number Of retrieved entries from database
 	 */
 	@Test
@@ -55,8 +55,8 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	/**
-	 * UC2 JDBC
-	 * Updating new Salary and syncing with java 
+	 * UC4 JDBC
+	 * Updating new Salary and syncing with java using prepared statement
 	 */
 	@Test
 	public void givenNewSalaryForEmployee_WhenUpdatedShouldSyncWithDB() {
@@ -64,6 +64,7 @@ public class EmployeePayrollServiceTest {
 		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
 		employeePayrollService.updateSalary("Terisa", 10000000.00);
 		boolean result = employeePayrollService.checkEmployeeDataSync("Terisa");
+		assertEquals(3, employeePayrollData.size());
 		assertTrue(result);
 	}
 }

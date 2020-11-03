@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
@@ -132,6 +133,14 @@ public class EmployeePayrollService {
 	public List<EmployeePayroll> readEmployeePayrollForDateRange(LocalDate start, LocalDate end) {
 		return employeePayrollDBService.getEmployeeForDateRange(start, end);
 	}	
+	
+	/**
+	 * Getting the average value
+	 * @return
+	 */
+	public Map<String, Double> readAvgSalaryByGender() {
+		return employeePayrollDBService.getAvgSalaryByGender();
+	}
 
 	/**
 	 * Main function

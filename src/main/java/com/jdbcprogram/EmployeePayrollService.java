@@ -3,6 +3,7 @@ package com.jdbcprogram;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -121,6 +122,16 @@ public class EmployeePayrollService {
 		}
 		return entries;
 	}
+	
+	/**
+	 * Get employees for particular dates
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public List<EmployeePayroll> readEmployeePayrollForDateRange(LocalDate start, LocalDate end) {
+		return employeePayrollDBService.getEmployeeForDateRange(start, end);
+	}	
 
 	/**
 	 * Main function

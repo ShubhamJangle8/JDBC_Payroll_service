@@ -1,6 +1,7 @@
 package com.jdbcprogram;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +10,6 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class EmployeePayrollDBService {
 
@@ -41,7 +41,7 @@ public class EmployeePayrollDBService {
 		}
 		return payrollData;
 	}
-	
+	// Updating methods
 	/**
 	 * Updating the payroll data in database
 	 * @param name
@@ -95,10 +95,6 @@ public class EmployeePayrollDBService {
 	 * @param name
 	 * @return
 	 */
-	public List<EmployeePayroll> getEmployeeData(String name) {
-		return readData().stream().filter(employee -> employee.name.equals(name)).collect(Collectors.toList());
-	}
-	
 	public List<EmployeePayroll> getEmployeePayrollData(String name) {
 		List<EmployeePayroll> employeePayrollList = null;
 		try {
@@ -112,6 +108,18 @@ public class EmployeePayrollDBService {
 			exception.printStackTrace();
 		}
 		return employeePayrollList;
+	}
+	
+	private List<EmployeePayroll> getEmployeePayrollDataUsingDB(String sql) {
+		List<EmployeePayroll> list = new ArrayList<>();
+		try(Connection connection  = this.getConnection()){
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			list = this.getEmployeeData(result);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
 	}
 	
 	/**
@@ -160,6 +168,18 @@ public class EmployeePayrollDBService {
 		catch(SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * UC5_Update data between date range
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public List<EmployeePayroll> getEmployeeForDateRange(LocalDate start, LocalDate end) {
+		String sql = String.format("SELECT * FROM employee_payroll WHERE START BETWEEN '%s' AND '%s';",
+					 Date.valueOf(start), Date.valueOf(end));
+		return this.getEmployeePayrollDataUsingDB(sql);
 	}
 	
 	/**

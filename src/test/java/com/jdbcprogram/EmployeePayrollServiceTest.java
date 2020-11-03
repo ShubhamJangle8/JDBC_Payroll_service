@@ -3,8 +3,10 @@ package com.jdbcprogram;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+
 import org.junit.Test;
 
 import com.jdbcprogram.EmployeePayrollService.IOService;
@@ -55,7 +57,7 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	/**
-	 * UC4 JDBC
+	 * UC3 and UC4 JDBC
 	 * Updating new Salary and syncing with java using prepared statement
 	 */
 	@Test
@@ -67,5 +69,16 @@ public class EmployeePayrollServiceTest {
 		assertEquals(3, employeePayrollData.size());
 		assertTrue(result);
 	}
+	
+	//UC5
+		@Test
+		public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() {
+			EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+			employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
+		    LocalDate start = LocalDate.of(2018, 8, 01);
+		    LocalDate end = LocalDate.now();
+		    List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeePayrollForDateRange(start, end);
+		    assertEquals(1, employeePayrollData.size());
+		}
 }
 	

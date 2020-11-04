@@ -28,71 +28,6 @@ public class EmployeePayrollDBService {
 	}
 
 	/**
-	 * Reading data from database
-	 * @return
-	 */
-	public List<EmployeePayroll> readData() {
-		String sql = "Select * from Employee_Payroll";
-		List<EmployeePayroll> payrollData = new ArrayList<>();
-		try (Connection connection = this.getConnection();){
-			Statement statement = connection.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
-			payrollData = this.getEmployeeData(resultSet);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return payrollData;
-	}
-	// Updating methods
-	/**
-	 * Updating the payroll data in database
-	 * @param name
-	 * @param salary
-	 * @return
-	 */
-	public int updateDataUsingStatement(String name, double salary) {
-		int result = 0;
-		String sql = String.format("UPDATE Employee_Payroll SET salary = %.2f where name = '%s';", salary, name);
-		try (Connection connection = this.getConnection();){
-			Statement statement = connection.createStatement();
-			result = statement.executeUpdate(sql);
-		}
-		catch(SQLException s) {
-			s.printStackTrace();
-		}
-		return result;
-	}
-	
-	/**
-	 * Implementation of update salary of the payroll data using prepared statement
-	 * @param name
-	 * @param salary
-	 * @return
-	 */
-	private int updateEmployeeDataUsingPreparedStatement(String name, double salary) {
-		try (Connection connection = this.getConnection()) {
-			String sql = "Update employee_payroll set salary = ? where name = ? ; " ; 
-			PreparedStatement prepareStatement = (PreparedStatement) connection.prepareStatement(sql);
-			prepareStatement.setDouble(1, salary);
-			prepareStatement.setString(2, name);
-			return prepareStatement.executeUpdate();
-		} catch (SQLException exception) {
-			exception.printStackTrace();
-		}
-		return 0;
-	}
-	
-	/**
-	 * Calling Employee Payroll Data
-	 * @param name
-	 * @param salary
-	 * @return
-	 */
-	public int updateEmployeeData(String name, double salary) {
-		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
-	}
-	
-	/**
 	 * Getting the Employee Payroll Data from the database
 	 * @param name
 	 * @return
@@ -110,18 +45,6 @@ public class EmployeePayrollDBService {
 			exception.printStackTrace();
 		}
 		return employeePayrollList;
-	}
-	
-	private List<EmployeePayroll> getEmployeePayrollDataUsingDB(String sql) {
-		List<EmployeePayroll> list = new ArrayList<>();
-		try(Connection connection  = this.getConnection()){
-			Statement statement = connection.createStatement();
-			ResultSet result = statement.executeQuery(sql);
-			list = this.getEmployeeData(result);
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return list;
 	}
 	
 	/**
@@ -173,6 +96,15 @@ public class EmployeePayrollDBService {
 	}
 	
 	/**
+	 * Reading data from database
+	 * @return
+	 */
+	public List<EmployeePayroll> readData() {
+		String sql = "Select * from Employee_Payroll";
+		return this.getEmployeePayrollDataUsingDB(sql);
+	}
+	
+	/**
 	 * UC5_Update data between date range
 	 * @param start
 	 * @param end
@@ -184,8 +116,20 @@ public class EmployeePayrollDBService {
 		return this.getEmployeePayrollDataUsingDB(sql);
 	}
 	
+	private List<EmployeePayroll> getEmployeePayrollDataUsingDB(String sql) {
+		List<EmployeePayroll> list = new ArrayList<>();
+		try(Connection connection  = this.getConnection()){
+			Statement statement = connection.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			list = this.getEmployeeData(result);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
 	/**
-	 * Get Employee avg salary by gender
+	 * Get Employee average salary by gender
 	 * @return
 	 */
 	public Map<String, Double> getAvgSalaryByGender() {
@@ -203,6 +147,82 @@ public class EmployeePayrollDBService {
 			e.printStackTrace();
 		}
 		return genderToAvgSalaryMap;
+	}
+	
+	// Updating methods
+	/**
+	 * Updating the payroll data in database
+	 * @param name
+	 * @param salary
+	 * @return
+	 */
+	public int updateDataUsingStatement(String name, double salary) {
+		int result = 0;
+		String sql = String.format("UPDATE Employee_Payroll SET salary = %.2f where name = '%s';", salary, name);
+		try (Connection connection = this.getConnection();){
+			Statement statement = connection.createStatement();
+			result = statement.executeUpdate(sql);
+		}
+		catch(SQLException s) {
+			s.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
+	 * Implementation of update salary of the payroll data using prepared statement
+	 * @param name
+	 * @param salary
+	 * @return
+	 */
+	private int updateEmployeeDataUsingPreparedStatement(String name, double salary) {
+		try (Connection connection = this.getConnection()) {
+			String sql = "Update employee_payroll set salary = ? where name = ? ; " ; 
+			PreparedStatement prepareStatement = (PreparedStatement) connection.prepareStatement(sql);
+			prepareStatement.setDouble(1, salary);
+			prepareStatement.setString(2, name);
+			return prepareStatement.executeUpdate();
+		} catch (SQLException exception) {
+			exception.printStackTrace();
+		}
+		return 0;
+	}
+	
+	/**
+	 * Calling Employee Payroll Data
+	 * @param name
+	 * @param salary
+	 * @return
+	 */
+	public int updateEmployeeData(String name, double salary) {
+		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
+	}
+	
+	/**
+	 * Insert new employee data into table
+	 * @param name
+	 * @param salary
+	 * @param start
+	 * @param gender
+	 * @return
+	 */
+	public EmployeePayroll addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
+		int id = -1;
+		EmployeePayroll data = null;
+		String sql = String.format("INSERT INTO employee_payroll (name, gender, salary,start)"+
+				"VALUES( '%s', '%s', '%s', '%s')", name, gender, salary, Date.valueOf(start));
+		try(Connection connection  = this.getConnection()){
+			Statement statement = connection.createStatement();
+			int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
+			if(rowAffected == 1) {
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if(resultSet.next()) id = resultSet.getInt(1);
+			}
+			data = new EmployeePayroll(id, name, salary, start);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return data;
 	}
 	
 	/**

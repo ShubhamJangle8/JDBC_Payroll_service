@@ -65,14 +65,14 @@ public class EmployeePayrollServiceTest {
 	public void givenNewSalaryForEmployee_WhenUpdatedShouldSyncWithDB() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
-		employeePayrollService.updateSalary("Terisa", 20000000.00);
+		employeePayrollService.updateSalary("Terisa", 10000000.00);
 		boolean result = employeePayrollService.checkEmployeeDataSync("Terisa");
 		assertEquals(3, employeePayrollData.size());
 		assertTrue(result);
 	}
 	
 	/**
-	 * //UC5 JDBC
+	 * //UC5 JDBC retrieve employee payroll between specfic dates
 	 */
 	@Test
 	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() {
@@ -81,11 +81,11 @@ public class EmployeePayrollServiceTest {
 	    LocalDate start = LocalDate.of(2018, 8, 01);
 	    LocalDate end = LocalDate.now();
 	    List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeePayrollForDateRange(start, end);
-	    assertEquals(1, employeePayrollData.size());
+	    assertEquals(2, employeePayrollData.size());
 	}
 	
 	/**
-	 * //UC6 JDBC
+	 * //UC6 JDBC average salary for gender
 	 */
 	@Test
 	public void givenPayrollData_WhenAvgSalaryRetrievedByGender_ShouldReturnProperValue() {
@@ -93,7 +93,19 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
 	    Map<String, Double> avgSalaryByGender = employeePayrollService.readAvgSalaryByGender();
 	    assertTrue(avgSalaryByGender.get("M").equals(20000000.0));
-	    assertTrue(avgSalaryByGender.get("F").equals(20000000.0));
+	    assertTrue(avgSalaryByGender.get("F").equals(10000000.0));
 	}
+	
+	//UC7 Adding Employees To the database
+	@Test
+	public void givenPayrollData_WhenAddedNewEntry_ShouldSyncWithDB() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readEmployeeData(IOService.DB_IO);
+		employeePayrollService.addEmployeeToPayroll("Shivam", 20000000.00, LocalDate.now(), "M");
+		
+	    boolean result = employeePayrollService.checkEmployeeDataSync("Shivam");
+	    assertTrue(result);
+	}
+	
 }
 	

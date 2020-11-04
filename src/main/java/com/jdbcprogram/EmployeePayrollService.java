@@ -14,7 +14,7 @@ public class EmployeePayrollService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
 
-	List<EmployeePayroll> empPayrollArrayList;
+	List<EmployeePayroll> empPayrollArrayList = null;
 	private EmployeePayrollDBService employeePayrollDBService;
 
 	/**
@@ -24,24 +24,9 @@ public class EmployeePayrollService {
 		this.employeePayrollDBService = EmployeePayrollDBService.getInstance();
 	}
 	
-	public EmployeePayrollService(List<EmployeePayroll> empPayrollArray) {
+	public EmployeePayrollService(List<EmployeePayroll> empPayrollArrayList) {
 		this();
-		this.empPayrollArrayList = empPayrollArray;
-	}
-
-	public void writeEmployeePayrollData(IOService ioService) {
-		if (ioService == IOService.CONSOLE_IO) {
-			System.out.println("The employee details are : " + empPayrollArrayList);
-		} else if (ioService == IOService.FILE_IO)
-			new EmployeePayrollFileIOService().writeData(empPayrollArrayList);
-	}
-
-	public void printData() {
-		try {
-			Files.lines(new File("payroll-file.text").toPath()).forEach(System.out::println);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.empPayrollArrayList = empPayrollArrayList;
 	}
 
 	public void readEmployeeData(IOService ioService) {
@@ -135,12 +120,34 @@ public class EmployeePayrollService {
 	}	
 	
 	/**
-	 * Getting the average value
+	 * Getting the average value by gender
 	 * @return
 	 */
 	public Map<String, Double> readAvgSalaryByGender() {
 		return employeePayrollDBService.getAvgSalaryByGender();
 	}
+	
+	public void writeEmployeePayrollData(IOService ioService) {
+		if (ioService == IOService.CONSOLE_IO) {
+			System.out.println("The employee details are : " + empPayrollArrayList);
+		} else if (ioService == IOService.FILE_IO)
+			new EmployeePayrollFileIOService().writeData(empPayrollArrayList);
+	}
+
+	public void printData() {
+		try {
+			Files.lines(new File("payroll-file.text").toPath()).forEach(System.out::println);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
+		empPayrollArrayList.add(employeePayrollDBService.addEmployeeToPayroll(name, salary, start, gender));
+	}
+//	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate start) {
+//		this.empPayrollArrayList.add(employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, start));
+//	}
 
 	/**
 	 * Main function

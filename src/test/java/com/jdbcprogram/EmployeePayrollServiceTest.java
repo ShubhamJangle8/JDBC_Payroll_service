@@ -72,7 +72,7 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	/**
-	 * //UC5 JDBC retrieve employee payroll between specfic dates
+	 * //UC5 JDBC retrieve employee payroll between specific dates
 	 */
 	@Test
 	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() {
@@ -93,7 +93,7 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
 	    Map<String, Double> avgSalaryByGender = employeePayrollService.readAvgSalaryByGender();
 	    assertTrue(avgSalaryByGender.get("M").equals(20000000.0));
-	    assertTrue(avgSalaryByGender.get("F").equals(10000000.0));
+	    assertTrue(avgSalaryByGender.get("F").equals(35000000.0));
 	}
 	
 	//UC7 Adding Employees To the database
@@ -101,9 +101,8 @@ public class EmployeePayrollServiceTest {
 	public void givenPayrollData_WhenAddedNewEntry_ShouldSyncWithDB() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService.readEmployeeData(IOService.DB_IO);
-		employeePayrollService.addEmployeeToPayroll("Shivam", 20000000.00, LocalDate.now(), "M");
-		
-	    boolean result = employeePayrollService.checkEmployeeDataSync("Shivam");
+		employeePayrollService.addEmployeeToPayroll("Shiv", 60000000.00, LocalDate.now(), "F");
+	    boolean result = employeePayrollService.checkEmployeeDataSync("Shiv");
 	    assertTrue(result);
 	}
 	

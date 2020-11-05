@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+
 public class EmployeePayrollService {
 	public enum IOService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
 
-	List<EmployeePayroll> empPayrollArrayList = null;
+	List<EmployeePayroll> empPayrollArrayList = new ArrayList<>();
 	private EmployeePayrollDBService employeePayrollDBService;
 
 	/**
@@ -143,11 +144,8 @@ public class EmployeePayrollService {
 	}
 	
 	public void addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
-		empPayrollArrayList.add(employeePayrollDBService.addEmployeeToPayroll(name, salary, start, gender));
+		empPayrollArrayList.add(employeePayrollDBService.addEmployeeToPayrollUC8(name, salary, start, gender));
 	}
-//	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate start) {
-//		this.empPayrollArrayList.add(employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, start));
-//	}
 
 	/**
 	 * Main function

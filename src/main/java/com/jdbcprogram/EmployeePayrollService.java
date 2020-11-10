@@ -95,19 +95,6 @@ public class EmployeePayrollService {
 	}
 	
 	/**
-	 * Checking for Employee Data in sync with database
-	 * @param name
-	 * @return
-	 */
-	public boolean checkEmployeeDataSync(String name) {
-		List<EmployeePayroll> employees = null;
-		employees = employeePayrollDBService.getEmployeePayrollData(name);
-		System.out.println(employees);
-		System.out.println(getEmployeePayrollData(name));
-		return employees.get(0).equals(getEmployeePayrollData(name));
-	}
-	
-	/**
 	 * Get employees for particular dates
 	 * @param start
 	 * @param end
@@ -147,18 +134,41 @@ public class EmployeePayrollService {
 	 * @param salary
 	 * @param date
 	 */
-	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate date) {
+	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate date,
+			List<String> departments) {
 		try {
-			employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, date);
+			employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, date, departments);
 		} catch (payrollServiceDBException | SQLException exception) {
 			System.out.println(exception.getMessage());
 		}
 	}
 	
+	/**
+	 * deletes employee record from database
+	 * 
+	 * @param id
+	 */
 	public void deleteEmployeeFromPayroll(int id) {
-		employeePayrollDBService.deleteEmployeeFromPayroll(id);
+		try {
+			employeePayrollDBService.deleteEmployeeFromPayroll(id);
+		} catch (payrollServiceDBException exception) {
+			System.out.println(exception.getMessage());
+		}
 	}
 	
+	/**
+	 * Checking for Employee Data in sync with database
+	 * @param name
+	 * @return
+	 */
+	public boolean checkEmployeeDataSync(String name) {
+		List<EmployeePayroll> employees = null;
+		employees = employeePayrollDBService.getEmployeePayrollData(name);
+		System.out.println(employees);
+		System.out.println(getEmployeePayrollData(name));
+		return employees.get(0).equals(getEmployeePayrollData(name));
+	}
+
 	/**
 	 * Main function
 	 * @param args

@@ -202,6 +202,7 @@ public class EmployeePayrollDBService {
 	
 	/**
 	 * adds employee details to database
+	 * 
 	 * @param name
 	 * @param gender
 	 * @param salary
@@ -211,8 +212,8 @@ public class EmployeePayrollDBService {
 	 * @throws SQLException
 	 */
 	@SuppressWarnings("static-access")
-	public EmployeePayroll addEmployeeToPayroll(String name, String gender, double salary, LocalDate date)
-			throws payrollServiceDBException, SQLException {
+	public EmployeePayroll addEmployeeToPayroll(String name, String gender, double salary, LocalDate date,
+			List<String> departments) throws payrollServiceDBException, SQLException {
 		int employeeId = -1;
 		Connection connection = null;
 		EmployeePayroll employee = null;
@@ -222,7 +223,7 @@ public class EmployeePayrollDBService {
 		} catch (SQLException exception) {
 			throw new payrollServiceDBException(exception.getMessage());
 		}
-		
+
 		try (Statement statement = (Statement) connection.createStatement()) { // adding to employee_payroll table
 			String sql = String.format(
 					"insert into employee_payroll (name, gender, salary, start) values ('%s', '%s', '%s', '%s')", name,
@@ -242,9 +243,28 @@ public class EmployeePayrollDBService {
 			}
 			throw new payrollServiceDBException("Unable to add to database");
 		}
-		
-		this.addToPayrollDetails(connection,employeeId, salary);			// adding to payroll_details table
-		
+
+		this.addToPayrollDetails(connection, employeeId, salary); // adding to payroll_details table
+
+		try (Statement statement = (Statement) connection.createStatement()) { // adding to employee_dept table
+			final int empId = employeeId;
+			departments.forEach(dept -> {
+				String sql = String.format("insert into employee_dept values (%s, '%s')", empId, dept);
+				try {
+					statement.executeUpdate(sql);
+				} catch (SQLException e) {
+				}
+			});
+			employee = new EmployeePayroll(employeeId, name, gender, salary, date, departments);
+		} catch (SQLException exception) {
+			try {
+				connection.rollback();
+			} catch (SQLException e) {
+				throw new payrollServiceDBException(e.getMessage());
+			}
+			throw new payrollServiceDBException("Unable to add to database");
+		}
+
 		try {
 			connection.commit();
 		} catch (SQLException e) {
@@ -263,20 +283,14 @@ public class EmployeePayrollDBService {
 	 * @param id
 	 * @throws payrollServiceDBException
 	 */
-	public int deleteEmployeeFromPayroll(int id) {
-		String sql = String.format("delete from employee_payroll where emp_id = ?;", id);
-		Connection connection;
-		try {
-			connection = this.getConnection();
-			PreparedStatement prepareStatement = (PreparedStatement) connection.prepareStatement(sql);
-			prepareStatement.setDouble(1, id);
-			int updateCount = prepareStatement.executeUpdate();
-			return updateCount;
-		} catch (SQLException e) {
-			e.printStackTrace();
+	public void deleteEmployeeFromPayroll(int id) throws payrollServiceDBException {
+		String sql = String.format("delete from employee_payroll where id = %s;", id);
+		try (Connection connection = this.getConnection()) {
+			Statement statement = (Statement) connection.createStatement();
+			statement.executeUpdate(sql);
+		} catch (SQLException exception) {
+			throw new payrollServiceDBException("Unable to delete data");
 		}
-		return 0;
-		
 	}
 	
 	/**

@@ -87,8 +87,9 @@ public class EmployeePayrollServiceTest {
 	@Test
 	public void givenNewEmployee_WhenAdded_ShouldSincWithDB() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.addEmployeeToPayroll("Raghav", "M", 500000, LocalDate.now(),
+													Arrays.asList("Sales", "Marketing"));
 		employeePayrollService.readEmployeeData(IOService.DB_IO);
-		employeePayrollService.addEmployeeToPayroll("Shubh", "M", 500000, LocalDate.now());
 		boolean result = employeePayrollService.checkEmployeeDataSync("Raghav");
 		assertTrue(result);
 	}
@@ -96,9 +97,8 @@ public class EmployeePayrollServiceTest {
 	@Test
 	void givenEmployeeId_WhenDeleted_shouldDeleteCascadingly() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.deleteEmployeeFromPayroll(11);
 		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeData(IOService.DB_IO);
-		employeePayrollService.deleteEmployeeFromPayroll(10);
-		employeePayrollData = employeePayrollService.readEmployeeData(IOService.DB_IO);
 		assertEquals(3, employeePayrollData.size());
 	}
 	

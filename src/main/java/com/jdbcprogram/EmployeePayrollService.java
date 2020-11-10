@@ -143,6 +143,16 @@ public class EmployeePayrollService {
 		}
 	}
 	
+	public void addMultipleEmployeesToPayroll(List<EmployeePayroll> employeeDataList) {
+		employeeDataList.forEach(employee -> {
+			try {
+				employeePayrollDBService.addEmployeeToPayroll(employee.name,employee.gender,employee.salary,employee.date,employee.departments);
+			} catch (SQLException | payrollServiceDBException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+	
 	/**
 	 * deletes employee record from database
 	 * 

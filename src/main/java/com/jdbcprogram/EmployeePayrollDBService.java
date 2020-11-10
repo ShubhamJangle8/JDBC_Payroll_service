@@ -186,7 +186,7 @@ public class EmployeePayrollDBService {
 			double tax = taxable_pay * 0.1;
 			double netPay = salary - tax;
 			String sql = String.format(
-					"insert into payroll_details (employeeId, basic_pay, deductions, taxable_pay, tax, net_pay) "
+					"insert into payroll_details (employee_id, basic_pay, deductions, taxable_pay, tax, net_pay) "
 							+ "VALUES ('%s','%s','%s','%s','%s','%s')",
 					employeeId, salary, deductions, taxable_pay, tax, netPay);
 			statement.executeUpdate(sql);
@@ -202,7 +202,6 @@ public class EmployeePayrollDBService {
 	
 	/**
 	 * adds employee details to database
-	 * 
 	 * @param name
 	 * @param gender
 	 * @param salary
@@ -249,7 +248,7 @@ public class EmployeePayrollDBService {
 		try (Statement statement = (Statement) connection.createStatement()) { // adding to employee_dept table
 			final int empId = employeeId;
 			departments.forEach(dept -> {
-				String sql = String.format("insert into employee_dept values (%s, '%s')", empId, dept);
+				String sql = String.format("insert into employee_department values (%s, '%s')", empId, dept);
 				try {
 					statement.executeUpdate(sql);
 				} catch (SQLException e) {

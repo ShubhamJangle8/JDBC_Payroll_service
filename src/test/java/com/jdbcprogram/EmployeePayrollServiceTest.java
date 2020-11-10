@@ -3,6 +3,7 @@ package com.jdbcprogram;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -47,24 +48,22 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	/**
-	 * UC2 JDBC
-	 * Matching number Of retrieved entries from database
+	 * UC2
 	 */
 	@Test
 	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchNumberofEntries() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
+		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeData(IOService.DB_IO);
 		assertEquals(3, employeePayrollData.size());
 	}
 	
 	/**
-	 * UC3 and UC4 JDBC
-	 * Updating new Salary and syncing with java using prepared statement
+	 * UC3 and UC4 
 	 */
 	@Test
 	public void givenNewSalaryForEmployee_WhenUpdatedShouldSyncWithDB() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
+		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeData(IOService.DB_IO);
 		employeePayrollService.updateSalary("Terisa", 10000000.00);
 		boolean result = employeePayrollService.checkEmployeeDataSync("Terisa");
 		assertEquals(3, employeePayrollData.size());
@@ -72,12 +71,12 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	/**
-	 * //UC5 JDBC retrieve employee payroll between specific dates
+	 * //UC5 
 	 */
 	@Test
 	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
+		employeePayrollService.readEmployeeData(IOService.DB_IO);
 	    LocalDate start = LocalDate.of(2018, 8, 01);
 	    LocalDate end = LocalDate.now();
 	    List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeePayrollForDateRange(start, end);
@@ -85,25 +84,15 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	/**
-	 * //UC6 JDBC average salary for gender
+	 * //UC6 
 	 */
 	@Test
 	public void givenPayrollData_WhenAvgSalaryRetrievedByGender_ShouldReturnProperValue() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		employeePayrollService.readEmployeeDataFromDB(IOService.DB_IO);
+		employeePayrollService.readEmployeeData(IOService.DB_IO);
 	    Map<String, Double> avgSalaryByGender = employeePayrollService.readAvgSalaryByGender();
 	    assertTrue(avgSalaryByGender.get("M").equals(20000000.0));
-	    assertTrue(avgSalaryByGender.get("F").equals(35000000.0));
-	}
-	
-	//UC7 Adding Employees To the database
-	@Test
-	public void givenPayrollData_WhenAddedNewEntry_ShouldSyncWithDB() {
-		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		employeePayrollService.readEmployeeData(IOService.DB_IO);
-		employeePayrollService.addEmployeeToPayroll("Shiv", 60000000.00, LocalDate.now(), "F");
-	    boolean result = employeePayrollService.checkEmployeeDataSync("Shiv");
-	    assertTrue(result);
+	    assertTrue(avgSalaryByGender.get("F").equals(10000000.0));
 	}
 	
 }

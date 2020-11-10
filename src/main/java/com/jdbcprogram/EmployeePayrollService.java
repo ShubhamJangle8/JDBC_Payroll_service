@@ -29,8 +29,23 @@ public class EmployeePayrollService {
 		this();
 		this.empPayrollArrayList = empPayrollArrayList;
 	}
+	
+	/**
+	 * Counting number of entries in file operations
+	 * @param fileIo
+	 * @return
+	 */
+	public long countEntries(IOService fileIo) {
+		long entries = 0;
+		try {
+			entries = Files.lines(new File("payroll-file.text").toPath()).count();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return entries;
+	}
 
-	public void readEmployeeData(IOService ioService) {
+	public List<EmployeePayroll> readEmployeeData(IOService ioService) {
 		Scanner scanner = new Scanner(System.in);
 		if (ioService.equals(IOService.CONSOLE_IO)) {
 			System.out.println("Enter Employee ID : ");
@@ -41,22 +56,18 @@ public class EmployeePayrollService {
 			System.out.println("Enter Employee Salary : ");
 			double salary = scanner.nextDouble();
 			empPayrollArrayList.add(new EmployeePayroll(id, name, salary));
+			return null;
 		} else if (ioService.equals(IOService.FILE_IO)) {
 			System.out.println("Reading data from file");
 			new EmployeePayrollFileIOService().printData();
+			return null;
 		}
-	}
-	
-	/**
-	 * Reading details from database UC1
-	 * @param ioService
-	 * @return
-	 */
-	public List<EmployeePayroll> readEmployeeDataFromDB(IOService ioService){
-		if(ioService.equals(IOService.DB_IO)) {
+		else if(ioService.equals(IOService.DB_IO)) {
 			this.empPayrollArrayList = employeePayrollDBService.readData();
+			return this.empPayrollArrayList;
 		}
-		return this.empPayrollArrayList;
+		return null;
+		
 	}
 	
 	/**
@@ -96,21 +107,6 @@ public class EmployeePayrollService {
 	}
 	
 	/**
-	 * Counting number of entries in file operations
-	 * @param fileIo
-	 * @return
-	 */
-	public long countEntries(IOService fileIo) {
-		long entries = 0;
-		try {
-			entries = Files.lines(new File("payroll-file.text").toPath()).count();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return entries;
-	}
-	
-	/**
 	 * Get employees for particular dates
 	 * @param start
 	 * @param end
@@ -143,10 +139,10 @@ public class EmployeePayrollService {
 		}
 	}
 	
-	public void addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
-		empPayrollArrayList.add(employeePayrollDBService.addEmployeeToPayrollUC8(name, salary, start, gender));
+	public void deleteEmployeeFromPayroll(int id) {
+		employeePayrollDBService.deleteEmployeeFromPayroll(id);
 	}
-
+	
 	/**
 	 * Main function
 	 * @param args

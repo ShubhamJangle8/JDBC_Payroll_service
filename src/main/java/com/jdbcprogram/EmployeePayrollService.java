@@ -3,6 +3,7 @@ package com.jdbcprogram;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,6 +137,21 @@ public class EmployeePayrollService {
 			Files.lines(new File("payroll-file.text").toPath()).forEach(System.out::println);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * adds employee details to database
+	 * @param name
+	 * @param gender
+	 * @param salary
+	 * @param date
+	 */
+	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate date) {
+		try {
+			employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, date);
+		} catch (payrollServiceDBException | SQLException exception) {
+			System.out.println(exception.getMessage());
 		}
 	}
 	

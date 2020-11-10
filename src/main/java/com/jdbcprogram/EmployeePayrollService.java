@@ -157,6 +157,21 @@ public class EmployeePayrollService {
 	}
 	
 	/**
+	 * returns list of active employees
+	 * @param id
+	 * @return
+	 */
+	public List<EmployeePayroll> removeEmployeeFromPayroll(int id) {
+		List<EmployeePayroll> onlyActiveList = null;
+		try {
+			onlyActiveList = employeePayrollDBService.removeEmployeeFromCompany(id);
+		} catch (payrollServiceDBException e) {
+			System.out.println(e.getMessage());
+		}
+		return onlyActiveList;
+	}
+	
+	/**
 	 * Checking for Employee Data in sync with database
 	 * @param name
 	 * @return

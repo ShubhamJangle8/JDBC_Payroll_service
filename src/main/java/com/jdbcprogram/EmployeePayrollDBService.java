@@ -294,6 +294,22 @@ public class EmployeePayrollDBService {
 	}
 	
 	/**
+	 * makes status of employee having given id as inactive
+	 * @param id
+	 * @return
+	 * @throws payrollServiceDBException
+	 */
+	public List<EmployeePayroll> removeEmployeeFromCompany(int id) throws payrollServiceDBException {
+		List<EmployeePayroll> listOfAllEmplyees = this.readData();
+		listOfAllEmplyees.forEach(employee -> {
+			if (employee.id == id) {
+				employee.is_active = false;
+			}
+		});
+		return listOfAllEmplyees;
+	}
+	
+	/**
 	 * Getting connection for each sql query
 	 * @return
 	 * @throws SQLException

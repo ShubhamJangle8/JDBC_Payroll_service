@@ -10,6 +10,8 @@ public class EmployeePayroll {
 	public double salary;
 	public LocalDate date;
 	public List<String> departments;
+	public PayrollDetails payrollDetails;
+	public boolean is_active = true;
 
 	public EmployeePayroll(int id, String name, double salary) {
 		super();
@@ -33,6 +35,13 @@ public class EmployeePayroll {
 		this(id, name, gender, salary, startDate);
 		this.departments = departments;
 	}
+	
+	public EmployeePayroll(int id, String name, String gender, double salary, LocalDate startDate,
+			PayrollDetails payrollDetails, List<String> departments) {
+		this(id, name, gender, salary, startDate, departments);
+		this.payrollDetails = payrollDetails;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -47,10 +56,10 @@ public class EmployeePayroll {
 		return id == that.id && Double.compare(that.salary, salary) == 0 && name.equals(that.name);
 	}
 
-	@Override
 	public String toString() {
-		return "id = " + id + ", name = " + name + ", Gender = " + gender + ", Salary = " + salary + ", Start Date = "
-				+ date + ", Departments : " + departments;
+		return "id = " + id + ", Departments : " + departments + ", name = " + name + ", Gender = " + gender
+				+ ", Salary = " + salary + ", Start Date = " + date + ", Payroll Details = " + payrollDetails
+				+ ", Status = " + ((is_active) ? "Active" : "Inactive");
 	}
 
 }

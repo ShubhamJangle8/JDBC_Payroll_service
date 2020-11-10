@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.jdbcprogram.EmployeePayrollService.IOService;
 
 public class EmployeePayrollServiceTest {
+	
 	@Test
 	public void given3Employees_WhenWrittenToFile_ShouldMatchEmployeeEntries() {
 		EmployeePayrollService employeePayrollService;
@@ -47,9 +48,6 @@ public class EmployeePayrollServiceTest {
 		assertEquals(3, entriesConsole);
 	}
 	
-	/**
-	 * UC2
-	 */
 	@Test
 	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchNumberofEntries() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
@@ -57,9 +55,6 @@ public class EmployeePayrollServiceTest {
 		assertEquals(3, employeePayrollData.size());
 	}
 	
-	/**
-	 * UC3 and UC4 
-	 */
 	@Test
 	public void givenNewSalaryForEmployee_WhenUpdatedShouldSyncWithDB() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
@@ -70,9 +65,6 @@ public class EmployeePayrollServiceTest {
 		assertTrue(result);
 	}
 	
-	/**
-	 * //UC5 
-	 */
 	@Test
 	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
@@ -83,9 +75,6 @@ public class EmployeePayrollServiceTest {
 	    assertEquals(2, employeePayrollData.size());
 	}
 	
-	/**
-	 * //UC6 
-	 */
 	@Test
 	public void givenPayrollData_WhenAvgSalaryRetrievedByGender_ShouldReturnProperValue() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();

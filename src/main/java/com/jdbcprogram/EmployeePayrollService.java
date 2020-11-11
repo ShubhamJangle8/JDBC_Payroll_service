@@ -221,17 +221,81 @@ public class EmployeePayrollService {
 	}
 	
 	/**
-	 * Checking for Employee Data in sync with database
+	 * given name and updated salary of employee updates in the database
+	 * @param name
+	 * @param salary
+	 */
+	public void updateEmployeePayrollSalary(String name, double salary) {
+		int result = 0;
+		try {
+			result = employeePayrollDBService.updateEmployeeData(name, salary);
+		} catch (payrollServiceDBException exception) {
+			System.out.println(exception.getMessage());
+		}
+		if (result == 0) {
+			return;
+		}
+		EmployeePayroll employeePayrollData = this.getEmployeePayrollData(name);
+		if (employeePayrollData != null) {
+			employeePayrollData.salary = salary;
+		}
+	}
+	
+	/**
+	 * updates multiple rows in database
+	 * @param newSalaryMap
+	 */
+	public void updateMultipleSalaries(Map<String, Double> newSalaryMap) {
+		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer, Boolean>();
+		newSalaryMap.forEach((k, v) -> {
+			Runnable task = () -> {
+				employeeAdditionStatus.put(k.hashCode(), false);
+				LOG.info("Employee Being updated : " + Thread.currentThread().getName());
+				this.updateEmployeePayrollSalary(k, v);
+				employeeAdditionStatus.put(k.hashCode(), true);
+				LOG.info("Employee updated : " + Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, k);
+			thread.start();
+		});
+		while (employeeAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * checks if add data updated is in sync
+	 * @param nameList
+	 * @return
+	 */
+	public boolean checkEmployeeListSync(List<String> nameList) {
+		List<Boolean> resultList = new ArrayList<>();
+		nameList.forEach(name -> {
+			resultList.add(checkEmployeePayrollInSyncWithDB(name));
+		});
+		if (resultList.contains(false)) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * checks if record matches with the updated record
 	 * @param name
 	 * @return
-	 * @throws payrollServiceDBException 
 	 */
-	public boolean checkEmployeeDataSync(String name) throws payrollServiceDBException {
-		List<EmployeePayroll> employees = null;
-		employees = employeePayrollDBService.getEmployeePayrollData(name);
-		System.out.println(employees);
-		System.out.println(getEmployeePayrollData(name));
-		return employees.get(0).equals(getEmployeePayrollData(name));
+	public boolean checkEmployeePayrollInSyncWithDB(String name) {
+		List<EmployeePayroll> employeePayrollDataList = null;
+		try {
+			employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
+		} catch (payrollServiceDBException exception) {
+			System.out.println(exception.getMessage());
+		}
+		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 
 	/**
@@ -248,5 +312,5 @@ public class EmployeePayrollService {
 		empPayrollService.readEmployeeData(IOService.FILE_IO);
 		empPayrollService.writeEmployeePayrollData(IOService.FILE_IO);
 	}
-
+	
 }

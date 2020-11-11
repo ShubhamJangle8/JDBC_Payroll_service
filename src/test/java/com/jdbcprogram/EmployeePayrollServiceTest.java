@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class EmployeePayrollServiceTest {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeData(IOService.DB_IO);
 		employeePayrollService.updateSalary("Terisa", 10000000.00);
-		boolean result = employeePayrollService.checkEmployeeDataSync("Terisa");
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
 		assertEquals(3, employeePayrollData.size());
 		assertTrue(result);
 	}
@@ -91,7 +92,7 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.addEmployeeToPayroll("Shubh", "M", 500000, LocalDate.now(),
 													Arrays.asList("Sales", "Marketing"));
 		employeePayrollService.readEmployeeData(IOService.DB_IO);
-		boolean result = employeePayrollService.checkEmployeeDataSync("Shubh");
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Shubh");
 		assertTrue(result);
 	}
 
@@ -131,6 +132,21 @@ public class EmployeePayrollServiceTest {
 		System.out.println("Duration with Thread: " + Duration.between(threadStart, threadEnd));
 		List<EmployeePayroll> employeePayrollData = employeePayrollService.readEmployeeData(IOService.DB_IO);
 		assertEquals(15, employeePayrollData.size());
+	}
+	
+	@Test
+	public void givenMultipleEmployees_WhenUpdatedSalary_ShouldSyncWithDB() throws payrollServiceDBException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		Map<String, Double> salaryMap = new HashMap<>();
+		salaryMap.put("Bill", 700000.0);
+		salaryMap.put("Mukesh", 800000.0);
+		Instant start = Instant.now();
+		employeePayrollService.updateMultipleSalaries(salaryMap);
+		Instant end = Instant.now();
+		System.out.println("Duration with Thread: " + Duration.between(start, end));
+		employeePayrollService.readEmployeeData(IOService.DB_IO);
+		boolean result = employeePayrollService.checkEmployeeListSync(Arrays.asList("Bill", "Mukesh"));
+		assertEquals(true, result);
 	}
 }
 	

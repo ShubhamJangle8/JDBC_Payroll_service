@@ -13,8 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EmployeePayrollDBService {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+public class EmployeePayrollDBService {
+	
+	private int connectionCounter = 0;
+	private static final Logger LOG = LogManager.getLogger(EmployeePayrollDBService.class);
 	private PreparedStatement empPayrollDataStatement;
 	private static EmployeePayrollDBService employeePayrollDBService; 
 	
@@ -44,7 +49,7 @@ public class EmployeePayrollDBService {
 		return empPayrollList;
 	}
 	
-	private List<EmployeePayroll> getEmployeePayrollDataUsingDB(String sql) {
+	private List<EmployeePayroll> getEmployeePayrollDataUsingDB(String sql) throws payrollServiceDBException {
 		List<EmployeePayroll> list = new ArrayList<>();
 		try(Connection connection  = this.getConnection()){
 			Statement statement = connection.createStatement();
@@ -60,13 +65,14 @@ public class EmployeePayrollDBService {
 	 * Reading the Employee Payroll Data from the database
 	 * @param name
 	 * @return
+	 * @throws payrollServiceDBException 
 	 */
-	public List<EmployeePayroll> readData() {
+	public List<EmployeePayroll> readData() throws payrollServiceDBException {
 		String sql = "Select * from Employee_Payroll";
 		return this.getEmployeePayrollDataUsingDB(sql);
 	}
 	
-	public List<EmployeePayroll> getEmployeePayrollData(String name) {
+	public List<EmployeePayroll> getEmployeePayrollData(String name) throws payrollServiceDBException {
 		List<EmployeePayroll> employeePayrollList = null;
 		try {
 			if (this.empPayrollDataStatement == null) {
@@ -81,7 +87,7 @@ public class EmployeePayrollDBService {
 		return employeePayrollList;
 	}
 	
-	public void prepareStatementForEmployeeData() {
+	public void prepareStatementForEmployeeData() throws payrollServiceDBException {
 		try {
 			Connection connection = this.getConnection();
 			String sql = "Select * from employee_payroll where name = ?";
@@ -97,8 +103,9 @@ public class EmployeePayrollDBService {
 	 * @param start
 	 * @param end
 	 * @return
+	 * @throws payrollServiceDBException 
 	 */
-	public List<EmployeePayroll> getEmployeeForDateRange(LocalDate start, LocalDate end) {
+	public List<EmployeePayroll> getEmployeeForDateRange(LocalDate start, LocalDate end) throws payrollServiceDBException {
 		String sql = String.format("SELECT * FROM employee_payroll WHERE START BETWEEN '%s' AND '%s';",
 					 Date.valueOf(start), Date.valueOf(end));
 		return this.getEmployeePayrollDataUsingDB(sql);
@@ -107,8 +114,9 @@ public class EmployeePayrollDBService {
 	/**
 	 * Get Employee average salary by gender
 	 * @return
+	 * @throws payrollServiceDBException 
 	 */
-	public Map<String, Double> getAvgSalaryByGender() {
+	public Map<String, Double> getAvgSalaryByGender() throws payrollServiceDBException {
 		String sql = "select gender, AVG(salary) as avgSalary from employee_payroll group by gender;";
 		Map<String, Double> genderToAvgSalaryMap = new HashMap<>();
 		try(Connection connection  = this.getConnection()){
@@ -125,14 +133,14 @@ public class EmployeePayrollDBService {
 		return genderToAvgSalaryMap;
 	}
 	
-	// Updating methods
 	/**
 	 * Updating the payroll data in database
 	 * @param name
 	 * @param salary
 	 * @return
+	 * @throws payrollServiceDBException 
 	 */
-	public int updateDataUsingStatement(String name, double salary) {
+	public int updateDataUsingStatement(String name, double salary) throws payrollServiceDBException {
 		int result = 0;
 		String sql = String.format("UPDATE Employee_Payroll SET salary = %.2f where name = '%s';", salary, name);
 		try (Connection connection = this.getConnection();){
@@ -150,8 +158,9 @@ public class EmployeePayrollDBService {
 	 * @param name
 	 * @param salary
 	 * @return
+	 * @throws payrollServiceDBException 
 	 */
-	private int updateEmployeeDataUsingPreparedStatement(String name, double salary) {
+	private int updateEmployeeDataUsingPreparedStatement(String name, double salary) throws payrollServiceDBException {
 		try (Connection connection = this.getConnection()) {
 			String sql = "Update employee_payroll set salary = ? where name = ? ; " ; 
 			PreparedStatement prepareStatement = (PreparedStatement) connection.prepareStatement(sql);
@@ -169,8 +178,9 @@ public class EmployeePayrollDBService {
 	 * @param name
 	 * @param salary
 	 * @return
+	 * @throws payrollServiceDBException 
 	 */
-	public int updateEmployeeData(String name, double salary) {
+	public int updateEmployeeData(String name, double salary) throws payrollServiceDBException {
 		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
 	}
 	
@@ -309,16 +319,27 @@ public class EmployeePayrollDBService {
 	}
 	
 	/**
-	 * Getting connection for each sql query
+	 * returns established synchronized connection with database
+	 * 
+	 * 
 	 * @return
-	 * @throws SQLException
+	 * @throws payrollServiceDBException
 	 */
-	private Connection getConnection() throws SQLException {
-		Connection connection = null;
+	private synchronized Connection getConnection() throws payrollServiceDBException {
+		connectionCounter++;
 		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
-		String userName = "root";;
-		String password = "1234";
-		connection = DriverManager.getConnection(jdbcURL, userName, password);
+		String userName = "root";
+		String password = "rpatil";
+		Connection connection = null;
+		try {
+			LOG.info("Processing Thread: " + Thread.currentThread().getName() + " Connecting to database with Id: "
+					+ connectionCounter + "  URL : " + jdbcURL);
+			connection = DriverManager.getConnection(jdbcURL, userName, password);
+			LOG.info("Processing Thread: " + Thread.currentThread().getName() + " Connecting to database with Id: "
+					+ connectionCounter + " Connection is successfull!!" + connection);
+		} catch (Exception exception) {
+			throw new payrollServiceDBException("Connection is not successful");
+		}
 		return connection;
 	}
 

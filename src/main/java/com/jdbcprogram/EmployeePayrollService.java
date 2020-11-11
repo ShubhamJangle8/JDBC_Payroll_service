@@ -11,8 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class EmployeePayrollService {
+	private static final Logger LOG = LogManager.getLogger(EmployeePayrollService.class);
+	
 	public enum IOService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
@@ -47,7 +52,7 @@ public class EmployeePayrollService {
 		return entries;
 	}
 
-	public List<EmployeePayroll> readEmployeeData(IOService ioService) {
+	public List<EmployeePayroll> readEmployeeData(IOService ioService) throws payrollServiceDBException {
 		Scanner scanner = new Scanner(System.in);
 		if (ioService.equals(IOService.CONSOLE_IO)) {
 			System.out.println("Enter Employee ID : ");
@@ -76,8 +81,9 @@ public class EmployeePayrollService {
 	 * Updating the salary in database as well as the employee payroll data UC2
 	 * @param name
 	 * @param salary
+	 * @throws payrollServiceDBException 
 	 */
-	public void updateSalary(String name, double salary) {
+	public void updateSalary(String name, double salary) throws payrollServiceDBException {
 		int countUpdates = employeePayrollDBService.updateEmployeeData(name, salary);
 		if(countUpdates == 0)
 			return;
@@ -100,16 +106,18 @@ public class EmployeePayrollService {
 	 * @param start
 	 * @param end
 	 * @return
+	 * @throws payrollServiceDBException 
 	 */
-	public List<EmployeePayroll> readEmployeePayrollForDateRange(LocalDate start, LocalDate end) {
+	public List<EmployeePayroll> readEmployeePayrollForDateRange(LocalDate start, LocalDate end) throws payrollServiceDBException {
 		return employeePayrollDBService.getEmployeeForDateRange(start, end);
 	}	
 	
 	/**
 	 * Getting the average value by gender
 	 * @return
+	 * @throws payrollServiceDBException 
 	 */
-	public Map<String, Double> readAvgSalaryByGender() {
+	public Map<String, Double> readAvgSalaryByGender() throws payrollServiceDBException {
 		return employeePayrollDBService.getAvgSalaryByGender();
 	}
 	
@@ -155,7 +163,7 @@ public class EmployeePayrollService {
 	}
 	
 	/**
-	 * adding multiple employees to payroll with thread
+	 * adding multiple employees to payroll with thread and used logs
 	 * @param employeeDataList
 	 */
 	public void addMultipleEmployeesToPayrollWithThreads(List<EmployeePayroll> employeeDataList) {
@@ -163,15 +171,15 @@ public class EmployeePayrollService {
 		employeeDataList.forEach(employee -> {
 			Runnable task = () -> {
 				employeeAdditionStatus.put(employee.hashCode(), false);
-				System.out.println("Employee Being Added: " + Thread.currentThread().getName());
+				LOG.info("Employee Being Added: " + Thread.currentThread().getName());
 				try {
 					employeePayrollDBService.addEmployeeToPayroll(employee.name, employee.gender, employee.salary,
-							employee.date, employee.departments);
+																  employee.date, employee.departments);
 				} catch (SQLException | payrollServiceDBException e) {
 					System.out.println(e.getMessage());
 				}
 				employeeAdditionStatus.put(employee.hashCode(), true);
-				System.out.println("Employee Added: " + Thread.currentThread().getName());
+				LOG.info("Employee Added: " + Thread.currentThread().getName());
 			};
 			Thread thread = new Thread(task, employee.name);
 			thread.start();
@@ -187,7 +195,6 @@ public class EmployeePayrollService {
 	
 	/**
 	 * deletes employee record from database
-	 * 
 	 * @param id
 	 */
 	public void deleteEmployeeFromPayroll(int id) {
@@ -217,8 +224,9 @@ public class EmployeePayrollService {
 	 * Checking for Employee Data in sync with database
 	 * @param name
 	 * @return
+	 * @throws payrollServiceDBException 
 	 */
-	public boolean checkEmployeeDataSync(String name) {
+	public boolean checkEmployeeDataSync(String name) throws payrollServiceDBException {
 		List<EmployeePayroll> employees = null;
 		employees = employeePayrollDBService.getEmployeePayrollData(name);
 		System.out.println(employees);
@@ -230,8 +238,9 @@ public class EmployeePayrollService {
 	 * Main function
 	 * @param args
 	 * @throws IOException
+	 * @throws payrollServiceDBException 
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, payrollServiceDBException {
 		ArrayList<EmployeePayroll> empPayrollArray = new ArrayList<>();
 		Scanner input = new Scanner(System.in);
 		EmployeePayrollService empPayrollService = new EmployeePayrollService(empPayrollArray);

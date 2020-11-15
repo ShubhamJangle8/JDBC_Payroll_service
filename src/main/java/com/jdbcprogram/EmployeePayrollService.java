@@ -200,7 +200,12 @@ public class EmployeePayrollService {
 		}
 	}
 	
-
+	public void addEmployeeToPayroll(EmployeePayroll employeePayrollData, IOService ioService) {
+		if(ioService.equals(ioService.REST_IO)) {
+			empPayrollArrayList.add(employeePayrollData);
+		}
+	}
+	
 	/**
 	 * Adding employee object to payroll added to json
 	 * @param employee

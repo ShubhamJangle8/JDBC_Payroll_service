@@ -103,7 +103,7 @@ public class EmployeePayrollService {
 	 * @param name
 	 * @return
 	 */
-	private EmployeePayroll getEmployeePayrollData(String name) {
+	public EmployeePayroll getEmployeePayrollData(String name) {
 		return this.empPayrollArrayList.stream().filter(employeePayrollItem -> employeePayrollItem.name.equals(name)).findFirst().orElse(null);
 	}
 	

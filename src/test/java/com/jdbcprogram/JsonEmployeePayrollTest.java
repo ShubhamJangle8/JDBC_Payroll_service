@@ -94,5 +94,20 @@ public class JsonEmployeePayrollTest {
 		long count = employeePayrollService.countEntries(IOService.REST_IO);
 		assertEquals(9, count);
 	}
+	
+	@Test
+	public void givenNewSalaryForEmployee_WhenUpdated_ShouldMatch200Request() {
+		EmployeePayroll[] arrayOfEmp = getEmployeeList();
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayOfEmp));
+		employeePayrollService.updateEmployeePayrollSalary("Mukesh Ambani", 4000000.0);
+		EmployeePayroll employee = employeePayrollService.getEmployeePayrollData("Mukesh Ambani");
+		String empJson = new Gson().toJson(employee);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type", "application/json");
+		request.body(empJson);
+		Response response = request.put("/employees/" + employee.id);
+		int statusCode = response.getStatusCode();
+		assertEquals(200, statusCode);
+	}
 
 }

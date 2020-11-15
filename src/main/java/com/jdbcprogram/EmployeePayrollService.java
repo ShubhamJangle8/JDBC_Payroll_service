@@ -288,6 +288,17 @@ public class EmployeePayrollService {
 		}
 	}
 	
+	/**Json Usecase5: deleting employee from the cache as well as json server
+	 * @param name
+	 * @param ioService
+	 */
+	public void deleteEmployee(String name, IOService ioService) {
+		if(ioService.equals(IOService.REST_IO)) {
+			EmployeePayroll employee = this.getEmployeePayrollData(name);
+			empPayrollArrayList.remove(employee);
+		}
+	}
+	
 	/**
 	 * checks if add data updated is in sync
 	 * @param nameList

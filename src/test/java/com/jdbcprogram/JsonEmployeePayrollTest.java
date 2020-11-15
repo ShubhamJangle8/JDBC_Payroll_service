@@ -34,11 +34,12 @@ public class JsonEmployeePayrollTest {
 	}
 
 	@Test
-	public void givenNewEmployee_WhenAdded_ShouldMatch201ResponseAndCount() {
+	public void givenEmployeeDataInJsonServer_WhenRetrieved_ShouldMatchTheCount() {
 		EmployeePayroll[] arrayOfEmp = getEmployeeList();
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayOfEmp));
 		EmployeePayroll employee = new EmployeePayroll(6, "Ratan Tata", "M", 9000000.0, LocalDate.now());
 		long count = employeePayrollService.countEntries(IOService.REST_IO);
 		Assert.assertEquals(6, count);
 	}
+	
 }

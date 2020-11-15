@@ -1,0 +1,76 @@
+{
+  "employees": [
+    {
+      "name": "Bill Gates",
+      "id": 1,
+      "salary": 3000000,
+      "gender": "M",
+      "startDate": {
+        "year": 2019,
+        "month": 11,
+        "day": 5
+      },
+      "is_active": true
+    },
+    {
+      "name": "Mukesh Ambani",
+      "id": 2,
+      "salary": 4000000,
+      "gender": "M",
+      "startDate": {
+        "year": 2000,
+        "month": 11,
+        "day": 5
+      },
+      "is_active": true
+    },
+    {
+      "name": "Mark Zuckerberg",
+      "id": 3,
+      "salary": 3000000,
+      "gender": "M",
+      "startDate": {
+        "year": 2020,
+        "month": 11,
+        "day": 5
+      },
+      "is_active": true
+    },
+    {
+      "name": "Sundar",
+      "id": 4,
+      "salary": 6000000,
+      "gender": "M",
+      "startDate": {
+        "year": 2020,
+        "month": 11,
+        "day": 5
+      },
+      "is_active": true
+    },
+    {
+      "name": "Jeff",
+      "id": 5,
+      "salary": 5000000,
+      "gender": "M",
+      "startDate": {
+        "year": 2020,
+        "month": 11,
+        "day": 5
+      },
+      "is_active": true
+    },
+    {
+      "id": 6,
+      "name": "Ratan Tata",
+      "gender": "M",
+      "salary": 9000000,
+      "date": {
+        "year": 2020,
+        "month": 11,
+        "day": 15
+      },
+      "is_active": true
+    }
+  ]
+}

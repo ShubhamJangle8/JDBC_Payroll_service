@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class EmployeePayrollService {
 	
 	public EmployeePayrollService(List<EmployeePayroll> empPayrollArrayList) {
 		this();
-		this.empPayrollArrayList = empPayrollArrayList;
+		this.empPayrollArrayList = new ArrayList<>(empPayrollArrayList);
 	}
 	
 	/**
@@ -42,12 +43,17 @@ public class EmployeePayrollService {
 	 * @param fileIo
 	 * @return
 	 */
-	public long countEntries(IOService fileIo) {
+	public long countEntries(IOService io) {
 		long entries = 0;
-		try {
-			entries = Files.lines(new File("payroll-file.text").toPath()).count();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (io.equals(IOService.REST_IO)) {
+			entries = empPayrollArrayList.size();
+		}
+		else {
+			try {
+				entries = Files.lines(new File("payroll-file.text").toPath()).count();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		return entries;
 	}
@@ -138,6 +144,7 @@ public class EmployeePayrollService {
 	
 	/**
 	 * adds employee details to database
+	 * 
 	 * @param name
 	 * @param gender
 	 * @param salary
@@ -193,6 +200,15 @@ public class EmployeePayrollService {
 		}
 	}
 	
+
+	/**
+	 * Adding employee object to payroll added to json
+	 * @param employee
+	 */
+	public void addEmployeeToPayroll(EmployeePayroll employee) {
+		addEmployeeToPayroll(employee.name, employee.gender, employee.salary, employee.date, Arrays.asList(""));
+	}
+
 	/**
 	 * deletes employee record from database
 	 * @param id
